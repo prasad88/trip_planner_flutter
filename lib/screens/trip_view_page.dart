@@ -15,21 +15,9 @@ class TripViewPage extends StatelessWidget {
         itemBuilder: (context, index) {
           final day = tripDays[index];
           return Card(
-            margin: EdgeInsets.all(8),
             child: ListTile(
-              leading: CircleAvatar(
-                backgroundColor: Colors.purple.shade100,
-                radius: 20,
-                child: FittedBox(
-                  child: Text(
-                    "Day\n${index + 1}",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.purple),
-                  ),
-                ),
-              ),
-              title: Text("${day["start"]} → ${day["end"]}"),
-              subtitle: Text("Estimated Distance: ${day["distance"]} km"),
+              title: Text("Day ${index + 1}: ${day["start"]} → ${day["end"]}"),
+              subtitle: Text("Distance: ${day["distance"]}"),
             ),
           );
         },

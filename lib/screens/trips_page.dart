@@ -1,24 +1,47 @@
 import 'package:flutter/material.dart';
-import 'trip_view_page.dart'; // Import the Trip View page
+import 'trip_view_page.dart';
+import 'add_trip_form.dart';
 
-class TripsPage extends StatelessWidget {
-  final List<Map<String, dynamic>> trips = [
+class TripsPage extends StatefulWidget {
+  @override
+  _TripsPageState createState() => _TripsPageState();
+}
+
+class _TripsPageState extends State<TripsPage> {
+  List<Map<String, dynamic>> trips = [
     {
       "name": "Weekend Getaway",
+      "startDate": "2025-03-10",
+      "endDate": "2025-03-12",
       "days": [
-        {"start": "City A", "end": "City B", "distance": "120"},
-        {"start": "City B", "end": "City C", "distance": "100"},
-        {"start": "City C", "end": "City D", "distance": "150"},
+        {"start": "City A", "end": "City B", "distance": "120 km"},
+        {"start": "City B", "end": "City C", "distance": "100 km"},
       ]
     },
     {
       "name": "Mountain Adventure",
+      "startDate": "2025-03-15",
+      "endDate": "2025-03-17",
       "days": [
-        {"start": "Town X", "end": "Hill Y", "distance": "80"},
-        {"start": "Hill Y", "end": "Valley Z", "distance": "90"},
+        {"start": "Town X", "end": "Hill Y", "distance": "80 km"},
+        {"start": "Hill Y", "end": "Valley Z", "distance": "90 km"},
       ]
     }
   ];
+
+  void _openAddTripForm() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => AddTripForm(
+        onTripAdded: (newTrip) {
+          setState(() {
+            trips.add(newTrip);
+          });
+        },
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,6 +54,7 @@ class TripsPage extends StatelessWidget {
           return Card(
             child: ListTile(
               title: Text(trip["name"]),
+              subtitle: Text("📅 ${trip["startDate"]} - ${trip["endDate"]}"),
               trailing: Icon(Icons.arrow_forward),
               onTap: () {
                 Navigator.push(
@@ -46,6 +70,11 @@ class TripsPage extends StatelessWidget {
             ),
           );
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _openAddTripForm,
+        child: Icon(Icons.add),
+        backgroundColor: Colors.purple,
       ),
     );
   }
