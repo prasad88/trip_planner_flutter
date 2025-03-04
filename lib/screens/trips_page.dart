@@ -16,6 +16,11 @@ class _TripsPageState extends State<TripsPage> {
       "days": [
         {"start": "City A", "end": "City B", "distance": "120 km"},
         {"start": "City B", "end": "City C", "distance": "100 km"},
+        {"start": "City B", "end": "City C", "distance": "100 km"},
+        {"start": "City B", "end": "City C", "distance": "100 km"},
+        {"start": "City B", "end": "City C", "distance": "100 km"},
+        {"start": "City B", "end": "City C", "distance": "100 km"},
+        {"start": "City B", "end": "City C", "distance": "100 km"},
       ]
     },
     {
@@ -24,6 +29,9 @@ class _TripsPageState extends State<TripsPage> {
       "endDate": "2025-03-17",
       "days": [
         {"start": "Town X", "end": "Hill Y", "distance": "80 km"},
+        {"start": "Hill Y", "end": "Valley Z", "distance": "90 km"},
+        {"start": "Hill Y", "end": "Valley Z", "distance": "90 km"},
+        {"start": "Hill Y", "end": "Valley Z", "distance": "90 km"},
         {"start": "Hill Y", "end": "Valley Z", "distance": "90 km"},
       ]
     }
