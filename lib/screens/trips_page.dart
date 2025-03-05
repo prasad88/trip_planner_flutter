@@ -21,7 +21,8 @@ class _TripsPageState extends State<TripsPage> {
         {"start": "City B", "end": "City C", "distance": "100 km"},
         {"start": "City B", "end": "City C", "distance": "100 km"},
         {"start": "City B", "end": "City C", "distance": "100 km"},
-      ]
+      ],
+      "image": "assets/app_icon.png"
     },
     {
       "name": "Mountain Adventure",
@@ -33,7 +34,8 @@ class _TripsPageState extends State<TripsPage> {
         {"start": "Hill Y", "end": "Valley Z", "distance": "90 km"},
         {"start": "Hill Y", "end": "Valley Z", "distance": "90 km"},
         {"start": "Hill Y", "end": "Valley Z", "distance": "90 km"},
-      ]
+      ],
+      "image": "assets/app_icon.png"
     }
   ];
 
@@ -61,6 +63,12 @@ class _TripsPageState extends State<TripsPage> {
           final trip = trips[index];
           return Card(
             child: ListTile(
+              leading: Image.asset(
+                trip['image'],
+                width: 50,
+                height: 50,
+                fit: BoxFit.cover,
+              ),
               title: Text(trip["name"]),
               subtitle: Text("📅 ${trip["startDate"]} - ${trip["endDate"]}"),
               trailing: Icon(Icons.arrow_forward),

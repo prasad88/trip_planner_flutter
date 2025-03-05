@@ -25,19 +25,19 @@ class MyApp extends StatelessWidget {
 class MainScreen extends StatefulWidget {
   @override
   // ignore: library_private_types_in_public_api
-  _MainScreenState createState() => _MainScreenState();
+  MainScreenState createState() => MainScreenState();
 }
 
-class _MainScreenState extends State<MainScreen> {
+class MainScreenState extends State<MainScreen> {
   int _selectedIndex = 1; // Default to Trips Page
 
   static final List<Widget> _pages = <Widget>[
-    HomePage(),
+    HomeScreen(),
     TripsPage(),
     ProfilePage(),
   ];
 
-  void _onItemTapped(int index) {
+  void onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
@@ -54,7 +54,7 @@ class _MainScreenState extends State<MainScreen> {
           BottomNavigationBarItem(icon: Icon(Icons.sports_motorsports), label: 'Profile'),
         ],
         currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
+        onTap: onItemTapped,
       ),
     );
   }

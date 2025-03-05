@@ -29,9 +29,9 @@ class TripViewPage extends StatelessWidget {
             indicatorStyle: IndicatorStyle(
               width: 30,
               color: isStart
-                  ? Colors.green
+                  ? Colors.purple
                   : isFinish
-                      ? Colors.red
+                      ? Colors.purple
                       : Colors.purple,
               iconStyle: IconStyle(
                 iconData: isStart
