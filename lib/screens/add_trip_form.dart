@@ -20,6 +20,8 @@ class _AddRideFormState extends State<AddRideForm> {
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _budgetController = TextEditingController();
   final TextEditingController _transportModeController = TextEditingController();
+  bool _isPublic = true;
+  bool _specificMotorcycle = false;
   File? _image;
 
   Future<void> _pickImage() async {
@@ -116,9 +118,51 @@ class _AddRideFormState extends State<AddRideForm> {
                     decoration: InputDecoration(
                       labelText: "Ride Name",
                       border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.title),
+                      prefixIcon: Icon(Icons.bolt),
                     ),
                     validator: (value) => value!.isEmpty ? "Enter a ride name" : null,
+                  ),
+                  SizedBox(height: 12),
+                   ToggleButtons(
+                    borderRadius: BorderRadius.circular(20),
+                    selectedBorderColor: Colors.purple,
+                    borderColor: Colors.black,
+                    fillColor: Colors.purple.withOpacity(0.2),
+                    color: Colors.grey,
+                    selectedColor: Colors.purple,
+                    textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    constraints: BoxConstraints(minHeight: 30, minWidth: 100),
+                    isSelected: [_isPublic, !_isPublic],
+                    onPressed: (index) {
+                      setState(() {
+                        _isPublic = index == 0;
+                      });
+                    },
+                    children: [
+                      Padding(padding: EdgeInsets.symmetric(vertical: 10), child: Text("Public")),
+                      Padding(padding: EdgeInsets.symmetric(vertical: 10), child: Text("Private"))
+                    ],
+                  ),
+                  SizedBox(height: 12),
+                  ToggleButtons(
+                    borderRadius: BorderRadius.circular(20),
+                    selectedBorderColor: Colors.purple,
+                    borderColor: Colors.black,
+                    fillColor: Colors.purple.withOpacity(0.2),
+                    color: Colors.grey,
+                    selectedColor: Colors.purple,
+                    textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    constraints: BoxConstraints(minHeight: 30, minWidth: 100),
+                    isSelected: [_specificMotorcycle, !_specificMotorcycle],
+                    onPressed: (index) {
+                      setState(() {
+                        _specificMotorcycle = index == 0;
+                      });
+                    },
+                    children: [
+                      Padding(padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16), child: Text("Specific Motorcycle")),
+                      Padding(padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16), child: Text("Any Motorcycle"))
+                    ],
                   ),
                   SizedBox(height: 12),
                   TextFormField(
