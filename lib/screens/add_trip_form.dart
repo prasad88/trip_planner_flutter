@@ -1,149 +1,213 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
+class AddRideForm extends StatefulWidget {
+  final Function(Map<String, dynamic>) onRideAdded;
 
-class AddTripForm extends StatefulWidget {
-  final Function(Map<String, dynamic>) onTripAdded;
-
-  AddTripForm({required this.onTripAdded});
+  AddRideForm({required this.onRideAdded});
 
   @override
-  _AddTripFormState createState() => _AddTripFormState();
+  _AddRideFormState createState() => _AddRideFormState();
 }
 
-class _AddTripFormState extends State<AddTripForm> {
+class _AddRideFormState extends State<AddRideForm> {
   final _formKey = GlobalKey<FormState>();
-  String _tripName = "";
-  String _startLocation = "";
-  String _endLocation = "";
-  String _distance = "";
-  DateTime? _startDate;
-  DateTime? _endDate;
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _startDateController = TextEditingController();
+  final TextEditingController _endDateController = TextEditingController();
+  final TextEditingController _locationController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _budgetController = TextEditingController();
+  final TextEditingController _transportModeController = TextEditingController();
+  File? _image;
 
-  Future<void> _pickDate(BuildContext context, bool isStartDate) async {
-    DateTime initialDate = DateTime.now();
-    DateTime firstDate = DateTime(2024);
-    DateTime lastDate = DateTime(2030);
+  Future<void> _pickImage() async {
+    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _image = File(pickedFile.path);
+      });
+    }
+  }
 
-    final DateTime? pickedDate = await showDatePicker(
+  Future<void> _selectDate(BuildContext context, TextEditingController controller) async {
+    DateTime? pickedDate = await showDatePicker(
       context: context,
-      initialDate: initialDate,
-      firstDate: firstDate,
-      lastDate: lastDate,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
     );
-
     if (pickedDate != null) {
       setState(() {
-        if (isStartDate) {
-          _startDate = pickedDate;
-        } else {
-          _endDate = pickedDate;
-        }
+        controller.text = "${pickedDate.toLocal()}".split(' ')[0];
       });
     }
   }
 
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
-      if (_startDate == null || _endDate == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Please select both start and end dates")),
-        );
-        return;
-      }
-      if (_startDate!.isAfter(_endDate!)) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Start date must be before end date")),
-        );
-        return;
-      }
-
-      _formKey.currentState!.save();
-
-      Map<String, dynamic> newTrip = {
-        "name": _tripName,
-        "startDate": DateFormat('yyyy-MM-dd').format(_startDate!),
-        "endDate": DateFormat('yyyy-MM-dd').format(_endDate!),
-        "days": [
-          {"start": _startLocation, "end": _endLocation, "distance": "$_distance km"}
-        ]
+      final newRide = {
+        "name": _nameController.text,
+        "startDate": _startDateController.text,
+        "endDate": _endDateController.text,
+        "location": _locationController.text,
+        "description": _descriptionController.text,
+        "budget": _budgetController.text,
+        "transportMode": _transportModeController.text,
+        "image": _image?.path ?? "assets/default_trip.jpg"
       };
-
-      widget.onTripAdded(newTrip);
-      Navigator.pop(context); // Close the modal
+      widget.onRideAdded(newRide);
+      Navigator.pop(context);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(
-        top: 20,
-        left: 20,
-        right: 20,
-        bottom: MediaQuery.of(context).viewInsets.bottom + 20,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
+    return Scaffold(
+      body: Column(
         children: [
-          Text("Add New Trip", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-          SizedBox(height: 15),
-          Form(
-            key: _formKey,
-            child: Column(
+          Stack(
+            alignment: Alignment.bottomRight,
+            children: [
+              Container(
+                width: double.infinity,
+                height: 250,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: _image != null ? FileImage(_image!) : AssetImage("assets/default_trip.jpg") as ImageProvider,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: 10,
+                right: 10,
+                child: CircleAvatar(
+                  backgroundColor: Colors.black54,
+                  child: IconButton(
+                    icon: Icon(Icons.edit, color: Colors.white),
+                    onPressed: _pickImage,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            child: Row(
               children: [
-                TextFormField(
-                  decoration: InputDecoration(labelText: "Trip Name"),
-                  validator: (value) => value!.isEmpty ? "Enter a trip name" : null,
-                  onSaved: (value) => _tripName = value!,
-                ),
-                TextFormField(
-                  decoration: InputDecoration(labelText: "Start Location"),
-                  validator: (value) => value!.isEmpty ? "Enter start location" : null,
-                  onSaved: (value) => _startLocation = value!,
-                ),
-                TextFormField(
-                  decoration: InputDecoration(labelText: "End Location"),
-                  validator: (value) => value!.isEmpty ? "Enter end location" : null,
-                  onSaved: (value) => _endLocation = value!,
-                ),
-                TextFormField(
-                  decoration: InputDecoration(labelText: "Distance (km)"),
-                  keyboardType: TextInputType.number,
-                  validator: (value) {
-                    if (value!.isEmpty) return "Enter distance";
-                    if (double.tryParse(value) == null) return "Enter a valid number";
-                    return null;
-                  },
-                  onSaved: (value) => _distance = value!,
-                ),
-                SizedBox(height: 10),
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextButton(
-                        onPressed: () => _pickDate(context, true),
-                        child: Text(_startDate == null
-                            ? "Select Start Date"
-                            : "Start: ${DateFormat('yyyy-MM-dd').format(_startDate!)}"),
-                      ),
-                    ),
-                    Expanded(
-                      child: TextButton(
-                        onPressed: () => _pickDate(context, false),
-                        child: Text(_endDate == null
-                            ? "Select End Date"
-                            : "End: ${DateFormat('yyyy-MM-dd').format(_endDate!)}"),
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: _submitForm,
-                  child: Text("Add Trip"),
+                BackButton(),
+                SizedBox(width: 8),
+                Text(
+                  "Add Ride",
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
               ],
+            ),
+          ),
+          Expanded(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                children: [
+                  TextFormField(
+                    controller: _nameController,
+                    decoration: InputDecoration(
+                      labelText: "Ride Name",
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.title),
+                    ),
+                    validator: (value) => value!.isEmpty ? "Enter a ride name" : null,
+                  ),
+                  SizedBox(height: 12),
+                  TextFormField(
+                    controller: _startDateController,
+                    decoration: InputDecoration(
+                      labelText: "Start Date",
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.calendar_today),
+                    ),
+                    readOnly: true,
+                    onTap: () => _selectDate(context, _startDateController),
+                    validator: (value) => value!.isEmpty ? "Enter start date" : null,
+                  ),
+                  SizedBox(height: 12),
+                  TextFormField(
+                    controller: _endDateController,
+                    decoration: InputDecoration(
+                      labelText: "End Date",
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.calendar_today),
+                    ),
+                    readOnly: true,
+                    onTap: () => _selectDate(context, _endDateController),
+                    validator: (value) => value!.isEmpty ? "Enter end date" : null,
+                  ),
+                  SizedBox(height: 12),
+                  TextFormField(
+                    controller: _locationController,
+                    decoration: InputDecoration(
+                      labelText: "Location",
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.location_on),
+                    ),
+                    validator: (value) => value!.isEmpty ? "Enter location" : null,
+                  ),
+                  SizedBox(height: 12),
+                  TextFormField(
+                    controller: _descriptionController,
+                    decoration: InputDecoration(
+                      labelText: "Description",
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.description),
+                    ),
+                    validator: (value) => value!.isEmpty ? "Enter a description" : null,
+                  ),
+                  SizedBox(height: 12),
+                  TextFormField(
+                    controller: _budgetController,
+                    decoration: InputDecoration(
+                      labelText: "Budget",
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.attach_money),
+                    ),
+                    validator: (value) => value!.isEmpty ? "Enter budget" : null,
+                  ),
+                  SizedBox(height: 12),
+                  TextFormField(
+                    controller: _transportModeController,
+                    decoration: InputDecoration(
+                      labelText: "Transport Mode",
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.directions_car),
+                    ),
+                    validator: (value) => value!.isEmpty ? "Enter transport mode" : null,
+                  ),
+                  SizedBox(height: 40),
+                ],
+              ),
+            ),
+          ),
+          Container(
+            padding: EdgeInsets.only(left: 16, right: 16, bottom: 60),
+            width: double.infinity,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                padding: EdgeInsets.symmetric(vertical: 14),
+              ),
+              onPressed: _submitForm,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.rocket_launch, size: 24),
+                  SizedBox(width: 8),
+                  Text("Let's Ride!", style: TextStyle(fontSize: 18)),
+                ],
+              ),
             ),
           ),
         ],

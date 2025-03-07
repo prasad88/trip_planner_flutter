@@ -8,19 +8,16 @@ class TripsPage extends StatefulWidget {
 }
 
 class _TripsPageState extends State<TripsPage> {
-  List<Map<String, dynamic>> trips = [
+  bool showPastTrips = false;
+  
+  List<Map<String, dynamic>> upcomingTrips = [
     {
       "name": "Weekend Getaway",
       "startDate": "2025-03-10",
       "endDate": "2025-03-12",
       "days": [
         {"start": "City A", "end": "City B", "distance": "120 km"},
-        {"start": "City B", "end": "City C", "distance": "100 km"},
-        {"start": "City B", "end": "City C", "distance": "100 km"},
-        {"start": "City B", "end": "City C", "distance": "100 km"},
-        {"start": "City B", "end": "City C", "distance": "100 km"},
-        {"start": "City B", "end": "City C", "distance": "100 km"},
-        {"start": "City B", "end": "City C", "distance": "100 km"},
+        {"start": "City B", "end": "City C", "distance": "100 km"}
       ],
       "image": "assets/app_icon.png"
     },
@@ -30,10 +27,20 @@ class _TripsPageState extends State<TripsPage> {
       "endDate": "2025-03-17",
       "days": [
         {"start": "Town X", "end": "Hill Y", "distance": "80 km"},
-        {"start": "Hill Y", "end": "Valley Z", "distance": "90 km"},
-        {"start": "Hill Y", "end": "Valley Z", "distance": "90 km"},
-        {"start": "Hill Y", "end": "Valley Z", "distance": "90 km"},
-        {"start": "Hill Y", "end": "Valley Z", "distance": "90 km"},
+        {"start": "Hill Y", "end": "Valley Z", "distance": "90 km"}
+      ],
+      "image": "assets/app_icon.png"
+    }
+  ];
+
+  List<Map<String, dynamic>> pastTrips = [
+    {
+      "name": "Desert Ride",
+      "startDate": "2025-02-10",
+      "endDate": "2025-02-12",
+      "days": [
+        {"start": "Oasis A", "end": "Dune B", "distance": "150 km"},
+        {"start": "Dune B", "end": "City C", "distance": "200 km"}
       ],
       "image": "assets/app_icon.png"
     }
@@ -43,35 +50,58 @@ class _TripsPageState extends State<TripsPage> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder: (context) => AddTripForm(
-        onTripAdded: (newTrip) {
+      builder: (context) => AddRideForm(
+        onRideAdded: (newTrip) {
           setState(() {
-            trips.add(newTrip);
+            upcomingTrips.add(newTrip);
           });
         },
       ),
     );
   }
 
+  void _toggleTripsView() {
+    setState(() {
+      showPastTrips = !showPastTrips;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    List<Map<String, dynamic>> trips = showPastTrips ? pastTrips : upcomingTrips;
     return Scaffold(
-      appBar: AppBar(title: Text("My Trips")),
-      body: ListView.builder(
+      appBar: AppBar(
+        title: Text(showPastTrips ? "Past Trips" : "Upcoming Trips"),
+      ),
+      body: ListView.separated(
         itemCount: trips.length,
+        separatorBuilder: (context, index) => Divider(),
         itemBuilder: (context, index) {
           final trip = trips[index];
+          String totalDistance = _calculateTotalDistance(trip["days"]);
           return Card(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            elevation: 4,
+            margin: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
             child: ListTile(
-              leading: Image.asset(
-                trip['image'],
-                width: 50,
-                height: 50,
-                fit: BoxFit.cover,
+              leading: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.asset(
+                  trip['image'] ?? 'assets/placeholder.png',
+                  width: 50,
+                  height: 50,
+                  fit: BoxFit.cover,
+                ),
               ),
-              title: Text(trip["name"]),
-              subtitle: Text("📅 ${trip["startDate"]} - ${trip["endDate"]}"),
-              trailing: Icon(Icons.arrow_forward),
+              title: Text(trip["name"], style: TextStyle(fontWeight: FontWeight.bold)),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("📅 ${trip["startDate"]} - ${trip["endDate"]}"),
+                  Text("🛣️ Total Distance: $totalDistance")
+                ],
+              ),
+              trailing: Icon(Icons.arrow_forward_ios),
               onTap: () {
                 Navigator.push(
                   context,
@@ -87,11 +117,33 @@ class _TripsPageState extends State<TripsPage> {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _openAddTripForm,
-        child: Icon(Icons.add),
-        backgroundColor: Colors.purple,
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+            onPressed: _toggleTripsView,
+            child: Icon(showPastTrips ? Icons.schedule : Icons.history),
+            backgroundColor: Colors.purple,
+            heroTag: "toggleTripsBtn",
+          ),
+          SizedBox(height: 10),
+          FloatingActionButton(
+            onPressed: _openAddTripForm,
+            child: Icon(Icons.add),
+            backgroundColor: Colors.purple,
+            heroTag: "addTripBtn",
+          ),
+        ],
       ),
     );
+  }
+
+  String _calculateTotalDistance(List<dynamic> days) {
+    int totalDistance = 0;
+    for (var day in days) {
+      String distanceStr = day["distance"].split(" ")[0];
+      totalDistance += int.tryParse(distanceStr) ?? 0;
+    }
+    return "$totalDistance km";
   }
 }

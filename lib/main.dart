@@ -29,7 +29,7 @@ class MainScreen extends StatefulWidget {
 }
 
 class MainScreenState extends State<MainScreen> {
-  int _selectedIndex = 1; // Default to Trips Page
+  int _selectedIndex = 0; // Default to Trips Page
 
   static final List<Widget> _pages = <Widget>[
     HomeScreen(),

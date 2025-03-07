@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'profile_page.dart';
-import 'package:trip_planner/main.dart';
 
 class HomeScreen extends StatelessWidget {
   final String username = "Rider"; // Static username for now
   final String userImage = "assets/user.png"; // Placeholder user image
 
   final List<Map<String, String>> openTrips = [
-    {"title": "Mountain Escape", "location": "Himalayas", "date": "March 10", "image": "assets/app_icon.png"},
-    {"title": "Coastal Cruise", "location": "Goa", "date": "March 15", "image": "assets/app_icon.png"},
-    {"title": "Desert Drift", "location": "Rajasthan", "date": "March 20", "image": "assets/app_icon.png"},
+    {"title": "Mountain Escape", "by":"Double Barrels", "location": "Himalayas", "date": "March 10", "image": "assets/app_icon.png"},
+    {"title": "Coastal Cruise", "by":"Double Barrels", "location": "Goa", "date": "March 15", "image": "assets/app_icon.png"},
+    {"title": "Desert Drift", "by":"Double Barrels", "location": "Rajasthan", "date": "March 20", "image": "assets/app_icon.png"},
   ];
 
   @override
@@ -26,7 +25,10 @@ class HomeScreen extends StatelessWidget {
                 children: [
                   GestureDetector(
                     onTap: () {
-                      (context.findAncestorStateOfType<MainScreenState>())?.onItemTapped(2);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => ProfilePage()),
+                      );
                     },
                     child: CircleAvatar(
                       radius: 50, // Increased size
@@ -67,8 +69,33 @@ class HomeScreen extends StatelessWidget {
                         height: 50,
                         fit: BoxFit.cover,
                       ),
-                      title: Text(trip['title']!),
-                      subtitle: Text("Location: ${trip['location']} | Date: ${trip['date']}"),
+                      title: Text(trip['title']!, style: TextStyle(fontWeight: FontWeight.bold)),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(Icons.location_on, size: 16, color: Colors.grey),
+                              SizedBox(width: 4),
+                              Text(trip['location']!, style: TextStyle(color: Colors.grey)),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Icon(Icons.groups, size: 16, color: Colors.grey),
+                              SizedBox(width: 4),
+                              Text(trip['by']!, style: TextStyle(color: Colors.grey)),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Icon(Icons.calendar_today, size: 16, color: Colors.grey),
+                              SizedBox(width: 4),
+                              Text(trip['date']!, style: TextStyle(color: Colors.grey)),
+                            ],
+                          ),
+                        ],
+                      ),
                       trailing: ElevatedButton(
                         onPressed: () {}, // Placeholder for join trip action
                         child: Text("Join"),
