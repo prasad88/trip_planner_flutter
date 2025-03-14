@@ -1,7 +1,16 @@
 import 'package:flutter/material.dart';
 
-class ViewTripPage extends StatelessWidget {
+class ViewTripPage extends StatefulWidget {
   final Map<String, dynamic> tripDetails;
+
+  ViewTripPage({required this.tripDetails});
+
+  @override
+  _ViewTripPageState createState() => _ViewTripPageState();
+}
+
+class _ViewTripPageState extends State<ViewTripPage> {
+  bool isTripStarted = false;
 
   static const String defaultImage = "assets/default_trip.jpg";
   static const String defaultUserImage = "assets/user.png";
@@ -15,13 +24,11 @@ class ViewTripPage extends StatelessWidget {
   static const List<String> keyFeatures = ["Breakfast included", "Free giveaway", "Free stay", "Live music"];
   static const List<String> rideRequirements = ["Helmet", "Safety Jacket", "Riding Boots", "Driving License", "Vehicle Insurance"];
 
-  ViewTripPage({required this.tripDetails});
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(tripDetails['name']),
+        title: Text(widget.tripDetails['name']),
         actions: [
           IconButton(icon: Icon(Icons.share), onPressed: () {}),
         ],
@@ -36,7 +43,7 @@ class ViewTripPage extends StatelessWidget {
                 Stack(
                   children: [
                     Image.asset(
-                      tripDetails['image'] ?? defaultImage,
+                      widget.tripDetails['image'] ?? defaultImage,
                       height: 200,
                       width: double.infinity,
                       fit: BoxFit.cover,
@@ -48,7 +55,7 @@ class ViewTripPage extends StatelessWidget {
                         color: Colors.black54,
                         padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                         child: Text(
-                          tripDetails['location'],
+                          widget.tripDetails['location'],
                           style: TextStyle(
                             fontSize: 20,
                             color: Colors.white,
@@ -67,12 +74,12 @@ class ViewTripPage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        tripDetails['name'],
+                        widget.tripDetails['name'],
                         style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                       ),
                       SizedBox(height: 5),
                       ExpandableText(
-                        text: tripDetails['description'] ?? noDescription,
+                        text: widget.tripDetails['description'] ?? noDescription,
                         maxLines: 3,
                       ),
                     ],
@@ -88,16 +95,16 @@ class ViewTripPage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "$ridersTitle (${tripDetails['riders'].length})",
+                          "$ridersTitle (${widget.tripDetails['riders'].length})",
                           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                         Container(
                           height: 140, // Increased height to accommodate larger images and names
                           child: ListView.builder(
                             scrollDirection: Axis.horizontal,
-                            itemCount: tripDetails['riders'].length,
+                            itemCount: widget.tripDetails['riders'].length,
                             itemBuilder: (context, index) {
-                              final rider = tripDetails['riders'][index];
+                              final rider = widget.tripDetails['riders'][index];
                               final riderImage = (rider['image'] != null && rider['image'].isNotEmpty)
                                   ? rider['image']
                                   : defaultUserImage;
@@ -146,7 +153,7 @@ class ViewTripPage extends StatelessWidget {
                           children: [
                             Icon(Icons.date_range, color: Colors.purple),
                             SizedBox(width: 8),
-                            Text("Start Date: ${tripDetails['startDate']}"),
+                            Text("Start Date: ${widget.tripDetails['startDate']}"),
                           ],
                         ),
                         SizedBox(height: 5),
@@ -154,7 +161,7 @@ class ViewTripPage extends StatelessWidget {
                           children: [
                             Icon(Icons.date_range, color: Colors.purple),
                             SizedBox(width: 8),
-                            Text("End Date: ${tripDetails['endDate']}"),
+                            Text("End Date: ${widget.tripDetails['endDate']}"),
                           ],
                         ),
                         SizedBox(height: 5),
@@ -162,7 +169,7 @@ class ViewTripPage extends StatelessWidget {
                           children: [
                             Icon(Icons.attach_money, color: Colors.purple),
                             SizedBox(width: 8),
-                            Text("Budget: ₹${tripDetails['budget']}"),
+                            Text("Ride Fee: ₹${widget.tripDetails['budget']}"),
                           ],
                         ),
                         SizedBox(height: 5),
@@ -170,7 +177,7 @@ class ViewTripPage extends StatelessWidget {
                           children: [
                             Icon(Icons.directions_bike, color: Colors.purple),
                             SizedBox(width: 8),
-                            Text("Transport: ${tripDetails['transportMode']}"),
+                            Text("Total Distance: ${widget.tripDetails['transportMode']}"),
                           ],
                         ),
                         SizedBox(height: 5),
@@ -178,15 +185,15 @@ class ViewTripPage extends StatelessWidget {
                           children: [
                             Icon(Icons.location_on, color: Colors.purple),
                             SizedBox(width: 8),
-                            Text("Location: ${tripDetails['location']}"),
+                            Text("Location: ${widget.tripDetails['location']}"),
                           ],
                         ),
                         SizedBox(height: 5),
                         Row(
                           children: [
-                            Icon(Icons.lock, color: tripDetails['isPrivate'] ? Colors.red : Colors.purple),
+                            Icon(Icons.lock, color: widget.tripDetails['isPrivate'] ? Colors.red : Colors.purple),
                             SizedBox(width: 8),
-                            Text("Visibility: ${tripDetails['isPrivate'] ? 'Private' : 'Public'}"),
+                            Text("Visibility: ${widget.tripDetails['isPrivate'] ? 'Private' : 'Public'}"),
                           ],
                         ),
                       ],
@@ -282,7 +289,23 @@ class ViewTripPage extends StatelessWidget {
             ),
           ),
           Positioned(
-            bottom: 168, // Adjusted position for the first button
+            bottom: 224, // Adjusted position for the first button
+            right: 16,
+            child: FloatingActionButton(
+              onPressed: () {
+                if (isTripStarted) {
+                  _showFinishTripConfirmationDialog(context);
+                } else {
+                  _showStartTripConfirmationDialog(context);
+                }
+              },
+              child: Icon(isTripStarted ? Icons.sports_score : Icons.flag),
+              backgroundColor: isTripStarted ? Colors.red : Colors.green,
+              mini: true, // Reduced size
+            ),
+          ),
+          Positioned(
+            bottom: 168, // Adjusted position for the second button
             right: 16,
             child: FloatingActionButton(
               onPressed: () {
@@ -297,7 +320,7 @@ class ViewTripPage extends StatelessWidget {
             ),
           ),
           Positioned(
-            bottom: 112, // Adjusted position for the second button
+            bottom: 112, // Adjusted position for the third button
             right: 16,
             child: FloatingActionButton(
               onPressed: () {
@@ -308,7 +331,7 @@ class ViewTripPage extends StatelessWidget {
             ),
           ),
           Positioned(
-            bottom: 56, // Adjusted position for the third button
+            bottom: 56, // Adjusted position for the fourth button
             right: 16,
             child: FloatingActionButton(
               onPressed: () {
@@ -322,6 +345,64 @@ class ViewTripPage extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  void _showStartTripConfirmationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Start Trip"),
+          content: Text("Are you sure you want to start the trip?"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+                setState(() {
+                  isTripStarted = true;
+                });
+              },
+              child: Text("Start"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showFinishTripConfirmationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Finish Trip"),
+          content: Text("Are you sure you want to finish the trip?"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+                setState(() {
+                  isTripStarted = false;
+                });
+              },
+              child: Text("Finish Ride"),
+            ),
+          ],
+        );
+      },
     );
   }
 
