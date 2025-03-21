@@ -1,43 +1,51 @@
 import 'package:flutter/material.dart';
+import '../main.dart'; // Import the appPurple constant
 
 class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Profile"),
-        centerTitle: true,
-        backgroundColor: Colors.black,
-      ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Container(
-              width: double.infinity,
-              padding: EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.black87, Colors.black],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
+            // Add SafeArea to prevent the rider photo from being cut by the camera notch
+            SafeArea(
+              child: Container(
+                width: double.infinity,
+                padding: EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage("assets/rider_background.jpg"), // Set the background image
+                    fit: BoxFit.cover, // Cover the entire container
+                  ),
                 ),
-              ),
-              child: Column(
-                children: [
-                  CircleAvatar(
-                    radius: 70,
-                    backgroundImage: AssetImage("assets/user.png"),
-                  ),
-                  SizedBox(height: 12),
-                  Text(
-                    "John Doe",
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
-                  ),
-                  Text(
-                    "Adventure Rider | Explorer",
-                    style: TextStyle(fontSize: 16, color: Colors.white70),
-                  ),
-                ],
+                child: Column(
+                  children: [
+                    // Add a thick border directly around the CircleAvatar
+                    Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: Colors.black, // Use appPurple for the border color
+                          width: 1, // Thickness of the border
+                        ),
+                      ),
+                      child: CircleAvatar(
+                        radius: 70, // Adjust radius to fit the border
+                        backgroundImage: AssetImage("assets/user.png"),
+                      ),
+                    ),
+                    SizedBox(height: 12),
+                    Text(
+                      "John Doe",
+                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+                    ),
+                    Text(
+                      "Adventure Rider | Explorer",
+                      style: TextStyle(fontSize: 16, color: Colors.white70),
+                    ),
+                  ],
+                ),
               ),
             ),
             SizedBox(height: 20),
@@ -91,7 +99,7 @@ class ProfilePage extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
         children: [
-          Icon(icon, color: Colors.black54),
+          Icon(icon, color: appPurple), // Use appPurple for the icon color
           SizedBox(width: 10),
           Text(text, style: TextStyle(fontSize: 16)),
         ],

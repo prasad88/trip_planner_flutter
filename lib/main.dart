@@ -4,6 +4,7 @@ import 'screens/home_page.dart';
 import 'screens/profile_page.dart';
 import 'screens/trips_page.dart';
 
+const Color appPurple = Colors.purple; // Define the purple color here
 
 void main() {
   runApp(MyApp());
@@ -13,9 +14,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Rider Trip Planner',
+      title: 'Trip Planner',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.purple,
       ),
       home: MainScreen(),
     );
@@ -29,7 +30,7 @@ class MainScreen extends StatefulWidget {
 }
 
 class MainScreenState extends State<MainScreen> {
-  int _selectedIndex = 0; // Default to Trips Page
+  int _selectedIndex = 0; // Default to Home Page
 
   static final List<Widget> _pages = <Widget>[
     HomeScreen(),
@@ -54,6 +55,8 @@ class MainScreenState extends State<MainScreen> {
           BottomNavigationBarItem(icon: Icon(Icons.sports_motorsports), label: 'Profile'),
         ],
         currentIndex: _selectedIndex,
+        selectedItemColor: appPurple, // Match the selected item color to appPurple
+        unselectedItemColor: Colors.grey, // Optional: Set unselected item color
         onTap: onItemTapped,
       ),
     );
